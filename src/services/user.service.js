@@ -20,18 +20,23 @@ class UserService {
     }
   }
 
-  // Update user details by ID
-  async updateUser(userId, updateData) {
-    try {
-      return await User.findOneAndUpdate(
-        { UserID: userId },
-        { $set: updateData },
-        { new: true }
-      );
-    } catch (error) {
-      throw new Error(`Error updating user: ${error.message}`);
+ // Update user details by ID using updateOne
+async updateUser(userId, updateData) {
+  try {
+    const result = await User.updateOne(
+      { UserID: userId },
+      { $set: updateData }
+    );
+
+    if (result.nModified === 0) {
+      throw new Error('No matching user found or no changes detected.');
     }
+
+    return await User.findOne({ UserID: userId }); // Fetch and return the updated user
+  } catch (error) {
+    throw new Error(`Error updating user: ${error.message}`);
   }
+}
 
   // Delete a user by ID
   async deleteUser(userId) {
