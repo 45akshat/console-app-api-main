@@ -12,14 +12,18 @@ class UserController {
 
   async getUserById(req, res) {
     try {
-      const user = await UserService.getUserById(req.params.id);
+      const { email } = req.body; // Extract email from the request body
+      if (!email) {
+        return res.status(400).json({ message: 'Email is required' }); // Handle missing email
+      }
+      const user = await UserService.getUserById(email);
       if (user) {
         res.json(user);
       } else {
         res.status(404).json({ message: 'User not found' });
       }
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      res.status(500).json({ message: `Internal server error: ${error.message}` });
     }
   }
 

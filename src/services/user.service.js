@@ -11,10 +11,10 @@ class UserService {
     }
   }
 
-  // Find a user by ID
-  async getUserById(userId) {
+  // Find a user by email
+  async getUserById(email) {
     try {
-      return await User.findOne({ UserID: userId });
+      return await User.findOne({ Name: email }); // Match schema field
     } catch (error) {
       throw new Error(`Error fetching user: ${error.message}`);
     }
