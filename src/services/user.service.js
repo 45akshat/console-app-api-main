@@ -68,6 +68,34 @@ async updateUser(userId, updateData) {
       throw error;
     }
   }
+
+
+  async updateUserCP (userId, cp, lastWheelSpun) {
+    const user = await User.findOne({ UserID: userId });
+  
+    if (!user) return null;
+  
+    user.CP = (user.CP || 0) + cp; // Add CP
+    user.Last_Wheel_Spun = lastWheelSpun; // Update last wheel spun date
+    user.Wheel_Spun_Today = true; // Set Wheel_Spun_Today to true
+  
+    return await user.save();
+  }
+
+  async updateUserStreak(userId, currentStreak, loggedInLast, cpToAdd) {
+    return await User.findOneAndUpdate(
+      { UserID: userId },
+      {
+        $set: {
+          Current_Streak: currentStreak,
+          Logged_In_Last: loggedInLast,
+        },
+        $inc: { CP: cpToAdd }, // Increment CP by the value of cpToAdd
+      },
+      { new: true }
+    );
+  }  
+
 }
 
 module.exports = new UserService();

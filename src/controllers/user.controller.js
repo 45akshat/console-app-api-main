@@ -74,6 +74,35 @@ class UserController {
       res.status(500).json({ message: error.message });
     }
   }
+
+
+  async updateUserCP (req, res) {
+    const { userId, cp, lastWheelSpun } = req.body;
+  
+    try {
+      const updatedUser = await UserService.updateUserCP(userId, cp, lastWheelSpun);
+      if (!updatedUser) return res.status(404).json({ error: 'User not found' });
+  
+      res.json({ message: 'User CP updated successfully', user: updatedUser });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+
+
+  async updateUserStreak (req, res) {
+    const { userId, currentStreak, loggedInLast, CP } = req.body;
+    console.log(req.body);
+    try {
+      const updatedUser = await UserService.updateUserStreak(userId, currentStreak, loggedInLast, CP);
+      res.json(updatedUser);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  };
+
+
+
 }
 
 module.exports = new UserController();
