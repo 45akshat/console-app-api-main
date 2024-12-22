@@ -82,19 +82,31 @@ async updateUser(userId, updateData) {
     return await user.save();
   }
 
-  async updateUserStreak(userId, currentStreak, loggedInLast, cpToAdd) {
-    return await User.findOneAndUpdate(
-      { UserID: userId },
-      {
-        $set: {
-          Current_Streak: currentStreak,
-          Logged_In_Last: loggedInLast,
-        },
-        $inc: { CP: cpToAdd }, // Increment CP by the value of cpToAdd
-      },
-      { new: true }
-    );
-  }  
+  async updateUserCP(userId, cp, lastWheelSpun) {
+    const user = await User.findOne({ UserID: userId });
+    console.log('User found:', user);
+  
+    if (!user) return null;
+  
+    user.CP = (user.CP || 0) + cp;
+    user.Last_Wheel_Spun = lastWheelSpun;
+    user.Wheel_Spun_Today = true;
+  
+    return await user.save();
+  }
+
+  async updateUserWallet(userId, wallet_info) {
+    const user = await User.findOne({ UserID: userId });
+    console.log('User found:', user);
+  
+    if (!user) return null;
+  
+    // Ensure Wallet_Info is numeric and update it
+    user.Wallet_Info = (user.Wallet_Info || 0) + parseFloat(wallet_info);  // Ensure wallet_info is a number
+  
+    return await user.save();
+  }
+  
 
 }
 
