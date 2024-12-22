@@ -9,7 +9,7 @@ router.delete('/:id', UserController.deleteUser);
 router.get('/', UserController.getAllUsers);
 router.post('/update-cp', UserController.updateUserCP);
 router.post('/update-streak', UserController.updateUserStreak);
-
+router.post('/wallet-info', UserController.updateUserWallet);
 // Check login date
 router.get('/checkLoginDate/:userID', UserController.checkLoginDate);
 
