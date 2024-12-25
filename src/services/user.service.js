@@ -80,10 +80,10 @@ async updateUser(userId, updateData) {
 
 
 
-  async updateUserWallet(userId, wallet_info, cp, paymentId) {
+  async updateUserWallet(userId, amountToAdd,  topUpAmount, cp, paymentId) {
     try {
       // Step 1: Capture the payment
-      const captureResponse = await razorpay.payments.capture(paymentId, wallet_info * 100); // Amount in paise
+      const captureResponse = await razorpay.payments.capture(paymentId, topUpAmount * 100); // Amount in paise
       console.log("Payment capture response:", captureResponse);
   
       // Step 2: Verify the payment status
@@ -100,7 +100,7 @@ async updateUser(userId, updateData) {
   
       console.log("User found:", user);
       user.CP = (user.CP || 0) + parseFloat(cp);
-      user.Wallet_Info = (user.Wallet_Info || 0) + parseFloat(wallet_info);
+      user.Wallet_Info = (user.Wallet_Info || 0) + parseFloat(amountToAdd);
   
       const updatedUser = await user.save();
       console.log("User wallet updated:", updatedUser);

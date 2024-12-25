@@ -88,12 +88,12 @@ class UserController {
       res.status(500).json({ error: err.message });
     }
   }
-  
+
   async updateUserWallet (req, res) {
-    const { userId, wallet,cp} = req.body;
+    const { userId, amountToAdd,  topUpAmount, cp, paymentId} = req.body;
   
     try {
-      const updatedUser = await UserService.updateUserWallet(userId, wallet,cp);
+      const updatedUser = await UserService.updateUserWallet(userId, amountToAdd,  topUpAmount, cp, paymentId);
       if (!updatedUser) return res.status(404).json({ error: 'User not found' });
   
       res.json({ message: 'User wallet updated successfully', user: updatedUser });
