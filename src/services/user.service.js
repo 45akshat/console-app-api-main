@@ -108,6 +108,17 @@ async updateUser(userId, updateData) {
   }
   
 
+  async updateUserStreak (req, res) {
+    const { userId, currentStreak, loggedInLast, CP } = req.body;
+    console.log(req.body);
+    try {
+      const updatedUser = await UserService.updateUserStreak(userId, currentStreak, loggedInLast, CP);
+      res.json(updatedUser);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  };
+
 }
 
 module.exports = new UserService();
