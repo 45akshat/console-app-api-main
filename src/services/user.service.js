@@ -1,4 +1,13 @@
 const User = require('../models/user.model'); // Path to your User model
+const Razorpay = require("razorpay");
+const axios = require("axios");
+
+// Razorpay instance initialization
+const razorpay = new Razorpay({
+  key_id: "rzp_live_NPwaQIImGlemVc",
+  key_secret: "WW61wrDtWqPCuZPGZ3JvQvCh",
+});
+
 
 class UserService {
   // Create a new user
@@ -70,18 +79,38 @@ async updateUser(userId, updateData) {
   }
 
 
-  async updateUserWallet(userId, wallet_info,cp) {
-    const user = await User.findOne({ UserID: userId });
-    console.log('User found:', user);
+
+  async updateUserWallet(userId, wallet_info, cp, paymentId) {
+    try {
+      // Step 1: Capture the payment
+      const captureResponse = await razorpay.payments.capture(paymentId, wallet_info * 100); // Amount in paise
+      console.log("Payment capture response:", captureResponse);
   
-    if (!user) return null;
-    user.CP =(user.CP|| 0)+ parseFloat(cp);
-    // Ensure Wallet_Info is numeric and update it
-    user.Wallet_Info = (user.Wallet_Info || 0) + parseFloat(wallet_info);  // Ensure wallet_info is a number
+      // Step 2: Verify the payment status
+      if (captureResponse.status !== "captured") {
+        throw new Error("Payment capture failed");
+      }
   
-    return await user.save();
+      // Step 3: Update the user's wallet
+      const user = await User.findOne({ UserID: userId });
+      if (!user) {
+        console.error("User not found");
+        return null;
+      }
+  
+      console.log("User found:", user);
+      user.CP = (user.CP || 0) + parseFloat(cp);
+      user.Wallet_Info = (user.Wallet_Info || 0) + parseFloat(wallet_info);
+  
+      const updatedUser = await user.save();
+      console.log("User wallet updated:", updatedUser);
+      return updatedUser;
+    } catch (error) {
+      console.error("Error updating user wallet:", error.message);
+      throw error;
+    }
   }
-  
+
   async updateUserCP (userId, cp, lastWheelSpun) {
     const user = await User.findOne({ UserID: userId });
   
