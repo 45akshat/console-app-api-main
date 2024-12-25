@@ -93,19 +93,21 @@ async updateUser(userId, updateData) {
   
     return await user.save();
   }
-  async updateUserStreak(userId, currentStreak, loggedInLast, cpToAdd) {
+  
+  async updateUserStreak(userId, currentStreak, loggedInLast, cpToSet) {
     return await User.findOneAndUpdate(
       { UserID: userId },
       {
         $set: {
           Current_Streak: currentStreak,
           Logged_In_Last: loggedInLast,
+          CP: cpToSet, // Set CP to the value of cpToSet
         },
-        $inc: { CP: cpToAdd }, // Increment CP by the value of cpToAdd
       },
       { new: true }
     );
-  }  
+  }
+  
 }
 
 module.exports = new UserService();
