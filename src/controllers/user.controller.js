@@ -88,6 +88,8 @@ class UserController {
       res.status(500).json({ error: err.message });
     }
   }
+
+  
   async updateUserWallet (req, res) {
     const { userId, wallet,cp} = req.body;
   
@@ -99,7 +101,7 @@ class UserController {
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
-  }o
+  }
 
 
   async updateUserStreak (req, res) {
