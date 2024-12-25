@@ -95,12 +95,12 @@ async updateUser(userId, updateData) {
     return await user.save();
   }
 
-  async updateUserWallet(userId, wallet_info) {
+  async updateUserWallet(userId, wallet_info,cp) {
     const user = await User.findOne({ UserID: userId });
     console.log('User found:', user);
   
     if (!user) return null;
-  
+    user.CP =(user.CP|| 0)+ parseFloat(cp);
     // Ensure Wallet_Info is numeric and update it
     user.Wallet_Info = (user.Wallet_Info || 0) + parseFloat(wallet_info);  // Ensure wallet_info is a number
   
