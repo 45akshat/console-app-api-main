@@ -70,31 +70,6 @@ async updateUser(userId, updateData) {
   }
 
 
-  async updateUserCP (userId, cp, lastWheelSpun) {
-    const user = await User.findOne({ UserID: userId });
-  
-    if (!user) return null;
-  
-    user.CP = (user.CP || 0) + cp; // Add CP
-    user.Last_Wheel_Spun = lastWheelSpun; // Update last wheel spun date
-    user.Wheel_Spun_Today = true; // Set Wheel_Spun_Today to true
-  
-    return await user.save();
-  }
-
-  async updateUserCP(userId, cp, lastWheelSpun) {
-    const user = await User.findOne({ UserID: userId });
-    console.log('User found:', user);
-  
-    if (!user) return null;
-  
-    user.CP = (user.CP || 0) + cp;
-    user.Last_Wheel_Spun = lastWheelSpun;
-    user.Wheel_Spun_Today = true;
-  
-    return await user.save();
-  }
-
   async updateUserWallet(userId, wallet_info,cp) {
     const user = await User.findOne({ UserID: userId });
     console.log('User found:', user);
@@ -107,18 +82,30 @@ async updateUser(userId, updateData) {
     return await user.save();
   }
   
-
-  async updateUserStreak (req, res) {
-    const { userId, currentStreak, loggedInLast, CP } = req.body;
-    console.log(req.body);
-    try {
-      const updatedUser = await UserService.updateUserStreak(userId, currentStreak, loggedInLast, CP);
-      res.json(updatedUser);
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
-  };
-
+  async updateUserCP (userId, cp, lastWheelSpun) {
+    const user = await User.findOne({ UserID: userId });
+  
+    if (!user) return null;
+  
+    user.CP = (user.CP || 0) + cp; // Add CP
+    user.Last_Wheel_Spun = lastWheelSpun; // Update last wheel spun date
+    user.Wheel_Spun_Today = true; // Set Wheel_Spun_Today to true
+  
+    return await user.save();
+  }
+  async updateUserStreak(userId, currentStreak, loggedInLast, cpToAdd) {
+    return await User.findOneAndUpdate(
+      { UserID: userId },
+      {
+        $set: {
+          Current_Streak: currentStreak,
+          Logged_In_Last: loggedInLast,
+        },
+        $inc: { CP: cpToAdd }, // Increment CP by the value of cpToAdd
+      },
+      { new: true }
+    );
+  }  
 }
 
 module.exports = new UserService();
