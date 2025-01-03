@@ -12,5 +12,6 @@ router.post('/update-streak', UserController.updateUserStreak);
 router.post('/wallet-info', UserController.updateUserWallet);
 // Check login date
 router.get('/checkLoginDate/:userID', UserController.checkLoginDate);
+router.post('/signin', UserController.signIn);
 
 module.exports = router;

@@ -29,6 +29,25 @@ class UserService {
     }
   }
 
+  async findUserByEmail(email) {
+    try {
+      return await User.findOne({ Name: email });
+    } catch (error) {
+      throw new Error(`Error fetching user: ${error.message}`);
+    }
+  }
+
+  async updateUserOTP(userId, otp, otpExpiry) {
+    try {
+      return await User.updateOne(
+        { UserID: userId },
+        { $set: { otp, otpExpiry } }
+      );
+    } catch (error) {
+      throw new Error(`Error updating OTP: ${error.message}`);
+    }
+  }
+
  // Update user details by ID using updateOne
 async updateUser(userId, updateData) {
   try {

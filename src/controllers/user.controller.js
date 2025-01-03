@@ -1,4 +1,18 @@
 const UserService = require('../services/user.service');
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
+
+// Nodemailer configuration
+const transporter = nodemailer.createTransport({
+  service: 'gmail', // or your email provider
+  auth: {
+    user: 'talkwithakshat@gmail.com', // Your email address
+    pass: 'luik jugb bksr qexj',
+  },
+});
+
+// Generate OTP
+const generateOTP = () => crypto.randomInt(100000, 999999).toString();
 
 class UserController {
   async createUser(req, res) {
@@ -127,9 +141,74 @@ class UserController {
     }
   };
 
+  async signIn(req, res) {
+    const { email, phone } = req.body;
 
-  
+    if (!email || !phone) {
+      return res.status(400).json({ success: false, message: 'Email and phone are required.' });
+    }
 
+    try {
+      const user = await UserService.findUserByEmail(email); // Check if the email already exists
+
+      const otp = generateOTP();
+      const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // OTP valid for 10 minutes
+
+      // Get the current date in YYYY-MM-DD format
+      const currentDate = new Date().toISOString().split('T')[0];
+
+      // Get the current date and subtract one day
+      const priorDate = new Date();
+      priorDate.setDate(priorDate.getDate() - 1);
+
+      // Format the date to YYYY-MM-DD
+      const formattedDate = priorDate.toISOString().split('T')[0];
+
+      if (user) {
+        // If user exists, update only OTP and OTP expiry
+        await UserService.updateUserOTP(user.UserID, otp, otpExpiry);
+      } else {
+        // Generate a unique UserID
+        const userId = crypto.randomUUID();
+
+        // Create a new user document
+        await UserService.createUser({
+          UserID: userId,                 // Unique user ID
+          Name: email,
+          otp: otp,                      // Generated OTP
+          otpExpiry: otpExpiry,          // OTP expiry time
+          detailsFilled: false,
+          // Additional Fields
+          CP: 200,                         // Default CP value
+          Check_In_Time: null,           // No check-in time yet
+          Check_In_Status: false,        // Default check-in status
+          Wallet_Info: 0,                // Default wallet balance
+          Current_Streak: 0,             // Default streak count
+          Wheel_Spun_Today: false,       // Default wheel spin status
+          Logged_In_Last: formattedDate,          // No login yet
+          Password: null,                // No password initially
+          contact: phone,                // Contact number
+          dob: null,                     // No DOB initially
+          full_name: null,               // No full name initially
+          insta_id: null,                // No Instagram ID initially
+          Last_Wheel_Spun: formattedDate,         // No wheel spin record
+        });
+      }
+
+      // Send OTP via email
+      await transporter.sendMail({
+        from: 'talkwithakshat@gmail.com',
+        to: email,
+        subject: 'Your OTP Code',
+        text: `Your OTP code is ${otp}`,
+      });
+
+      res.json({ success: true, message: 'OTP sent successfully.' });
+    } catch (error) {
+      console.error('Error during sign-in:', error);
+      res.status(500).json({ success: false, message: 'An error occurred. Please try again later.' });
+    }
+  }
 
 }
 
