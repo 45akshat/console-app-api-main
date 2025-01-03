@@ -6,8 +6,8 @@ const crypto = require('crypto');
 const transporter = nodemailer.createTransport({
   service: 'gmail', // or your email provider
   auth: {
-    user: 'talkwithakshat@gmail.com', // Your email address
-    pass: 'luik jugb bksr qexj',
+    user: 'info@consolegaming.in', // Your email address
+    pass: 'rdvx znri pknd xjqj',
   },
 });
 
@@ -197,7 +197,7 @@ class UserController {
 
       // Send OTP via email
       await transporter.sendMail({
-        from: 'talkwithakshat@gmail.com',
+        from: 'info@consolegaming.in',
         to: email,
         subject: 'Your OTP Code',
         text: `Your OTP code is ${otp}`,
