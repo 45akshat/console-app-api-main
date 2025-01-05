@@ -210,6 +210,130 @@ class UserController {
     }
   }
 
+  async verifyOTP(req, res) {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+      return res.status(400).json({ success: false, message: 'Email and OTP are required.' });
+    }
+
+    try {
+      // Check if the email is the demo account
+      if (email === "testing@gmail.com") {
+        const testOTP = "665544";  // Test OTP
+        const testUser = {
+          id: 'be549f98-17df-49aa-aca9-6e397157f38a',
+          email: email,
+          name: 'Akshat',
+          phone: '9022559233',
+          address: 'Dadar Mumbai',
+        };
+
+        // If the OTP matches for the test user, proceed
+        if (otp === testOTP) {
+          return res.json({
+            success: true,
+            message: 'User exists. Redirecting to homepage.',
+            detailsFilled: true,
+            user: testUser,
+          });
+        } else {
+          return res.status(400).json({
+            success: false,
+            message: 'Invalid OTP for test account.',
+          });
+        }
+      }
+
+      const user = await UserService.findUserByEmail(email);
+
+      if (!user) {
+        return res.status(404).json({ success: false, message: 'User not found.' });
+      }
+
+      if (user.otp !== otp || new Date() > user.otpExpiry) {
+        return res.status(400).json({ success: false, message: 'Invalid or expired OTP.' });
+      }
+
+      // Clear OTP
+      user.otp = null;
+      user.otpExpiry = null;
+      await user.save();
+
+      res.json({
+        success: true,
+        message: user.detailsFilled ? 'User exists. Redirecting to homepage.' : 'New user. Redirecting to details page.',
+        detailsFilled: user.detailsFilled,
+        user: {
+          id: user.UserID,
+          email: user.Name,
+          phone: user.contact,
+          name: user.full_name || null,
+          address: user.address || null,
+        },
+      });
+    } catch (error) {
+      console.error('Error during OTP verification:', error);
+      res.status(500).json({ success: false, message: 'An error occurred. Please try again later.' });
+    }
+  }
+
+  async fillDetails(req, res) {
+    const { email, full_name, address, dob, insta_id, referral_code } = req.body;
+
+    if (!email || !full_name || !address || !dob || !insta_id) {
+      return res.status(400).json({ success: false, message: 'Email, name, and address are required.' });
+    }
+
+    try {
+      const user = await UserService.findUserByEmail(email);
+
+      if (!user) {
+        return res.status(404).json({ success: false, message: 'User not found.' });
+      }
+
+      user.full_name = full_name;
+      user.address = address;
+      user.dob = dob;
+      user.insta_id = insta_id;
+      user.Check_In_Time = new Date(Date.now());
+      user.Check_In_Status = true;
+      user.detailsFilled = true;
+
+      let referrer = null;
+
+      if (referral_code) {
+        const referral = await UserService.findReferralByCode(referral_code);
+        if (referral) {
+          referrer = referral.made_by;
+        } else {
+          return res.status(400).json({ success: false, message: 'Invalid referral code.' });
+        }
+      }
+
+      await user.save();
+
+      res.json({
+        success: true,
+        message: 'Details saved successfully. Redirecting to homepage.',
+        user: {
+          id: user.UserID,
+          Name: user.Name,
+          phone: user.contact,
+          full_name: user.full_name,
+          address: user.address,
+          dob: user.dob,
+          cp: user.CP,
+          wallet: user.Wallet_Info,
+          insta_id: user.insta_id,
+          referrer: referrer,
+        },
+      });
+    } catch (error) {
+      console.error('Error during details saving:', error);
+      res.status(500).json({ success: false, message: 'An error occurred. Please try again later.' });
+    }
+  }
 }
 
 module.exports = new UserController();

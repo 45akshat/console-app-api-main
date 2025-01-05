@@ -168,6 +168,14 @@ async updateUser(userId, updateData) {
       { new: true }
     );
   }
+
+  async findReferralByCode(code) {
+    try {
+      return await Referral.findOne({ code: code });
+    } catch (error) {
+      throw new Error(`Error fetching referral: ${error.message}`);
+    }
+  }
   
 }
 

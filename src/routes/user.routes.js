@@ -13,5 +13,7 @@ router.post('/wallet-info', UserController.updateUserWallet);
 // Check login date
 router.get('/checkLoginDate/:userID', UserController.checkLoginDate);
 router.post('/signin', UserController.signIn);
+router.post('/verify-otp', UserController.verifyOTP);
+router.post('/fill-details', UserController.fillDetails);
 
 module.exports = router;
