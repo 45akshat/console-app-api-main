@@ -11,9 +11,9 @@ const UserSchema = new mongoose.Schema({
   Wheel_Spun_Today: { type: Boolean, default: false },
   Logged_In_Last: { type: String, default: null },
   Password: { type: String, default: null }, // Assuming hashed password
-  contact: { type: String, required: true },
+  contact: { type: String, default: null },
   dob: { type: Date, default: null },
-  full_name: { type: String, required: true },
+  full_name: { type: String, default: null },
   insta_id: { type: String, default: null },
   Last_Wheel_Spun: { type: String, default: null },
   otp: { type: String, default: null },
