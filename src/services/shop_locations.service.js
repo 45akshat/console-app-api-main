@@ -11,7 +11,7 @@ async function fetchShopData(latitude, longitude) {
             type: 'Point',
             coordinates: [longitude, latitude]
           },
-          $maxDistance: 500000000 // 5km in meters
+          $maxDistance: 50000000000000000000000000000000000000000000 // 5km in meters
         }
       }
     });
