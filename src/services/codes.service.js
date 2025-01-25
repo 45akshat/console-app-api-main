@@ -78,3 +78,5 @@ async function redeemCode(userID, codeData, cpToDeduct) {
 }
 
 module.exports = { fetchAllCodes, fetchCodesByUserID, createCode, updateCode, redeemCode };
+
+// add
