@@ -306,6 +306,7 @@ class UserController {
         const referral = await UserService.findReferralByCode(referral_code);
         if (referral) {
           referrer = referral.made_by;
+          user.CP = 400; // Add 50 CP to the user
         } else {
           return res.status(400).json({ success: false, message: 'Invalid referral code.' });
         }
