@@ -16,8 +16,8 @@ async function getCodesByUserID(req, res) {
 // Controller to create a new code
 async function createNewCode(req, res) {
   const codeData = req.body;
-  // const newCode = await createCode(codeData);
-  // res.json(newCode);
+  const newCode = await createCode(codeData);
+  res.json(newCode);
 }
 
 // Controller to update a code by ID

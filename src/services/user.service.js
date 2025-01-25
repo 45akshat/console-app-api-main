@@ -1,6 +1,7 @@
 const User = require('../models/user.model'); // Path to your User model
 const Razorpay = require("razorpay");
 const axios = require("axios");
+const Referral = require('../models/referral.model');
 
 // Razorpay instance initialization
 const razorpay = new Razorpay({
