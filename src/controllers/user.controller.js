@@ -306,6 +306,7 @@ class UserController {
         const referral = await UserService.findReferralByCode(referral_code);
         if (referral) {
           referrer = referral.made_by;
+          user.CP += 200;
         } else {
           return res.status(400).json({ success: false, message: 'Invalid referral code.' });
         }
@@ -331,6 +332,30 @@ class UserController {
       });
     } catch (error) {
       console.error('Error during details saving:', error);
+      res.status(500).json({ success: false, message: 'An error occurred. Please try again later.' });
+    }
+  }
+
+  async updateReferrerCP(req, res) {
+    const { referrerId, points } = req.body;
+
+    if (!referrerId || !points) {
+      return res.status(400).json({ success: false, message: 'Referrer ID and points are required.' });
+    }
+
+    try {
+      const user = await UserService.getUserById(referrerId);
+
+      if (!user) {
+        return res.status(404).json({ success: false, message: 'User not found.' });
+      }
+
+      user.CP = (user.CP || 0) + points;
+      await user.save();
+
+      res.json({ success: true, message: 'Referrer CP updated successfully.', user });
+    } catch (error) {
+      console.error('Error updating referrer CP:', error);
       res.status(500).json({ success: false, message: 'An error occurred. Please try again later.' });
     }
   }

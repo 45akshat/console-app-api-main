@@ -15,5 +15,6 @@ router.get('/checkLoginDate/:userID', UserController.checkLoginDate);
 router.post('/signin', UserController.signIn);
 router.post('/verify-otp', UserController.verifyOTP);
 router.post('/fill-details', UserController.fillDetails);
+router.post('/update-referrer-cp', UserController.updateReferrerCP);
 
 module.exports = router;
