@@ -177,6 +177,14 @@ async updateUser(userId, updateData) {
       throw new Error(`Error fetching referral: ${error.message}`);
     }
   }
+
+  async getUserByUserId(userId) {
+    try {
+      return await User.findOne({ UserID: userId });
+    } catch (error) {
+      throw new Error(`Error fetching user by UserID: ${error.message}`);
+    }
+  }
   
 }
 

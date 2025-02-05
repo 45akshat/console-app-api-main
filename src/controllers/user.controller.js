@@ -344,7 +344,7 @@ class UserController {
     }
 
     try {
-      const user = await UserService.getUserById(referrerId);
+      const user = await UserService.getUserByUserId(referrerId);
 
       if (!user) {
         return res.status(404).json({ success: false, message: 'User not found.' });
