@@ -6,11 +6,13 @@ const referralRoutes = require('./routes/referral.routes');
 const tournamentRoutes = require('./routes/tournament.routes');
 const paymentRoutes = require('./routes/payment.routes'); // New import
 const mailRoutes = require('./routes/mail.routes'); // New import
+const cors = require('cors'); // Add this line
 
 const app = express();
 
 // Middleware
 app.use(express.json());
+app.use(cors()); // Add this line
 
 // Routes
 app.use('/api/users', userRoutes);
