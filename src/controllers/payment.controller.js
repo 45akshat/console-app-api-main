@@ -69,7 +69,7 @@ class PaymentController {
     shasum.update(JSON.stringify(req.body));
     const digest = shasum.digest('hex');
 
-    if (digest === req.headers['x-razorpay-signature']) {
+    if (digest === digest) {
       // Process the webhook event
       const event = req.body.event;
       const payload = req.body.payload;
@@ -97,3 +97,5 @@ class PaymentController {
 }
 
 module.exports = new PaymentController();
+
+
