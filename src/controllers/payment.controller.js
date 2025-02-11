@@ -77,7 +77,7 @@ class PaymentController {
           from: 'info@consolegaming.in',
           to: 'talkwithakshat@gmail.com',
           subject: 'Payment Captured',
-          text: `Payment of amount ${amount} has been captured for user ID ${userId}. Full webhook body: ${JSON.stringify(req.body)}`,
+          text: `Payment of amount ${amount} has been captured for user ID ${email}. Full webhook body: ${JSON.stringify(req.body)}`,
         });
       }
 
