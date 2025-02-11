@@ -56,7 +56,7 @@ class PaymentController {
       // Handle different event types
       if (event === 'payment.captured') {
         const payment = payload.payment.entity;
-        const email = payload.payment.email; // Assuming userId is stored in payment notes
+        const email = payload.payment.entity.email; // Assuming userId is stored in payment notes
         const amount = payment.amount / 100; // Convert amount to original value
 
         // Calculate CP to add based on the amount
