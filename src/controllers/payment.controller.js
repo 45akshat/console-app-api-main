@@ -63,7 +63,7 @@ class PaymentController {
   }
 
   async handleWebhook(req, res) {
-    const secret = 'your_webhook_secret';
+    const secret = '1234';
 
     const shasum = crypto.createHmac('sha256', secret);
     shasum.update(JSON.stringify(req.body));
@@ -79,6 +79,14 @@ class PaymentController {
         const payment = payload.payment.entity;
         // Process the captured payment
         // For example, update the order status in your database
+
+        // Send email notification
+        await transporter.sendMail({
+          from: 'info@consolegaming.in',
+          to: 'talkwithakshat@gmail.com',
+          subject: 'Payment Captured',
+          text: `Payment of amount ${payment.amount / 100} ${payment.currency} has been captured for payment ID ${payment.id}. Full webhook body: ${JSON.stringify(req.body)}`,
+        });
       }
 
       res.json({ status: 'ok' });
