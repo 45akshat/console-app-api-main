@@ -1,6 +1,7 @@
 const PaymentService = require('../services/payment.service');
 const UserService = require('../services/user.service'); // Import UserService
 const nodemailer = require('nodemailer'); // Import nodemailer
+const crypto = require('crypto'); // Import crypto
 
 // Nodemailer configuration
 const transporter = nodemailer.createTransport({
@@ -58,6 +59,31 @@ class PaymentController {
       }
     } catch (error) {
       res.status(500).json({ message: error.message });
+    }
+  }
+
+  async handleWebhook(req, res) {
+    const secret = 'your_webhook_secret';
+
+    const shasum = crypto.createHmac('sha256', secret);
+    shasum.update(JSON.stringify(req.body));
+    const digest = shasum.digest('hex');
+
+    if (digest === req.headers['x-razorpay-signature']) {
+      // Process the webhook event
+      const event = req.body.event;
+      const payload = req.body.payload;
+
+      // Handle different event types
+      if (event === 'payment.captured') {
+        const payment = payload.payment.entity;
+        // Process the captured payment
+        // For example, update the order status in your database
+      }
+
+      res.json({ status: 'ok' });
+    } else {
+      res.status(400).json({ message: 'Invalid signature' });
     }
   }
 }
