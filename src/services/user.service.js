@@ -24,7 +24,7 @@ class UserService {
   // Find a user by email
   async getUserById(email) {
     try {
-      return await User.findOne({ Name: email }); // Match schema field
+      return await User.findOne({ Name: { $regex: new RegExp(`^${email}$`, 'i') } }); // Case-insensitive search
     } catch (error) {
       throw new Error(`Error fetching user: ${error.message}`);
     }
@@ -32,7 +32,7 @@ class UserService {
 
   async findUserByEmail(email) {
     try {
-      return await User.findOne({ Name: email });
+      return await User.findOne({ Name: { $regex: new RegExp(`^${email}$`, 'i') } }); // Case-insensitive search
     } catch (error) {
       throw new Error(`Error fetching user: ${error.message}`);
     }
