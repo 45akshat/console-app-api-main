@@ -38,6 +38,19 @@ class UserService {
     }
   }
 
+  async updateUserWalletByEmail(email, wallet_info,cp) {
+    const user = await User.findOne({ Name: email });
+    console.log('User found:', user);
+  
+    if (!user) return null;
+    user.CP =(user.CP|| 0)+ parseFloat(cp);
+    // Ensure Wallet_Info is numeric and update it
+    user.Wallet_Info = (user.Wallet_Info || 0) + parseFloat(wallet_info);  // Ensure wallet_info is a number
+  
+    return await user.save();
+  }
+  
+
   async updateUserOTP(userId, otp, otpExpiry) {
     try {
       return await User.updateOne(

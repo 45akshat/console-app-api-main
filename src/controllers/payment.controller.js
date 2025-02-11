@@ -25,35 +25,14 @@ class PaymentController {
 
   async verifyPayment(req, res) {
     try {
-      const { orderId, paymentId, signature, userId, amount } = req.body; // Include userId and amount in the request body
+      const { orderId, paymentId, signature, userId, amount } = req.body; // Remove userId and amount from the request body
       
       // Add a delay before verifying the payment signature
       await new Promise(resolve => setTimeout(resolve, 5000)); // 5 seconds delay
 
       const isValid = await PaymentService.verifyPaymentSignature(orderId, paymentId, signature);
       if (isValid) {
-        // Calculate CP to add based on the amount
-        let cpToAdd = 0;
-        if (amount == 500) {
-          cpToAdd = 100;
-        } else if (amount == 1025) {
-          cpToAdd = 250;
-        } else if (amount == 2100) {
-          cpToAdd = 600;
-        }
-
-        // Update user's wallet
-        await UserService.updateUserWallet(userId, amount, cpToAdd);
-
-        // Send email notification
-        await transporter.sendMail({
-          from: 'info@consolegaming.in',
-          to: 'talkwithakshat@gmail.com',
-          subject: 'Payment Verified',
-          text: `Payment of amount ${amount} has been verified for user ID ${userId}.`,
-        });
-
-        res.json({ success: true, message: 'Payment verified and wallet updated successfully' });
+        res.json({ success: true, message: 'Payment verified successfully' });
       } else {
         res.status(400).json({ success: false, message: 'Invalid payment signature' });
       }
@@ -69,7 +48,7 @@ class PaymentController {
     shasum.update(JSON.stringify(req.body));
     const digest = shasum.digest('hex');
 
-    if (digest === digest) {
+    if (digest === req.headers['x-razorpay-signature']) {
       // Process the webhook event
       const event = req.body.event;
       const payload = req.body.payload;
@@ -77,15 +56,28 @@ class PaymentController {
       // Handle different event types
       if (event === 'payment.captured') {
         const payment = payload.payment.entity;
-        // Process the captured payment
-        // For example, update the order status in your database
+        const email = payload.payment.email; // Assuming userId is stored in payment notes
+        const amount = payment.amount / 100; // Convert amount to original value
+
+        // Calculate CP to add based on the amount
+        let cpToAdd = 0;
+        if (amount == 500) {
+          cpToAdd = 100;
+        } else if (amount == 1025) {
+          cpToAdd = 250;
+        } else if (amount == 2100) {
+          cpToAdd = 600;
+        }
+
+        // Update user's wallet
+        await UserService.updateUserWalletByEmail(email, amount, cpToAdd);
 
         // Send email notification
         await transporter.sendMail({
           from: 'info@consolegaming.in',
           to: 'talkwithakshat@gmail.com',
           subject: 'Payment Captured',
-          text: `Payment of amount ${payment.amount / 100} ${payment.currency} has been captured for payment ID ${payment.id}. Full webhook body: ${JSON.stringify(req.body)}`,
+          text: `Payment of amount ${amount} has been captured for user ID ${userId}. Full webhook body: ${JSON.stringify(req.body)}`,
         });
       }
 
