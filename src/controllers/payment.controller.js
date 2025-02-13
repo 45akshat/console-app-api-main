@@ -58,26 +58,29 @@ class PaymentController {
         const payment = payload.payment.entity;
         const email = payload.payment.entity.email; // Assuming userId is stored in payment notes
         const amount = payment.amount / 100; // Convert amount to original value
-
+        let amountVoucher = amount;
         // Calculate CP to add based on the amount
         let cpToAdd = 0;
         if (amount == 500) {
+          amountVoucher = 500;
           cpToAdd = 100;
-        } else if (amount == 1025) {
+        } else if (amount == 1000) {
+          amountVoucher = 1025;
           cpToAdd = 250;
-        } else if (amount == 2100) {
+        } else if (amount == 2000) {
+          amountVoucher = 2100;
           cpToAdd = 600;
         }
 
         // Update user's wallet
-        await UserService.updateUserWalletByEmail(email, amount, cpToAdd);
+        await UserService.updateUserWalletByEmail(email, amountVoucher, cpToAdd);
 
         // Send email notification
         await transporter.sendMail({
           from: 'info@consolegaming.in',
           to: 'talkwithakshat@gmail.com',
           subject: 'Payment Captured',
-          text: `Payment of amount ${amount} has been captured for user ID ${email}. Full webhook body: ${JSON.stringify(req.body)}`,
+          text: `Payment of amount ${amountVoucher} has been captured for user ID ${email}. Full webhook body: ${JSON.stringify(req.body)}`,
         });
       }
 
