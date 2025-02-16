@@ -142,13 +142,14 @@ class UserController {
   };
 
   async signIn(req, res) {
-    const { email, phone } = req.body;
+    let { email, phone } = req.body;
 
     if (!email || !phone) {
       return res.status(400).json({ success: false, message: 'Email and phone are required.' });
     }
 
     try {
+      email = email.replace(/\s+/g, '').toLowerCase(); // Remove all spaces and convert to lowercase
       const user = await UserService.findUserByEmail(email); // Check if the email already exists
 
       const otp = generateOTP();
