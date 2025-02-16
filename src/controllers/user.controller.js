@@ -292,6 +292,8 @@ class UserController {
         return res.status(404).json({ success: false, message: 'User not found.' });
       }
 
+      // Preprocess the Name field to remove spaces and convert to lowercase
+      user.Name = user.Name.replace(/\s+/g, '').toLowerCase();
       user.full_name = full_name;
       user.address = address;
       user.dob = dob;

@@ -14,6 +14,10 @@ class UserService {
   // Create a new user
   async createUser(userData) {
     try {
+      // Preprocess the Name field to remove spaces and convert to lowercase
+      if (userData.Name) {
+        userData.Name = userData.Name.replace(/\s+/g, '').toLowerCase();
+      }
       const newUser = new User(userData);
       return await newUser.save();
     } catch (error) {
@@ -39,7 +43,7 @@ class UserService {
   }
 
   async updateUserWalletByEmail(email, wallet_info,cp) {
-    const user = await User.findOne({ Name: email });
+    const user = await User.findOne({ Name: { $regex: new RegExp(`^${email}$`, 'i') } });;
     console.log('User found:', user);
   
     if (!user) return null;
