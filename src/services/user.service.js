@@ -28,6 +28,7 @@ class UserService {
   // Find a user by email
   async getUserById(email) {
     try {
+      email = email.replace(/\s+/g, ''); // Remove all spaces
       return await User.findOne({ Name: { $regex: new RegExp(`^${email}$`, 'i') } }); // Case-insensitive search
     } catch (error) {
       throw new Error(`Error fetching user: ${error.message}`);
@@ -36,18 +37,20 @@ class UserService {
 
   async findUserByEmail(email) {
     try {
+      email = email.replace(/\s+/g, ''); // Remove all spaces
       return await User.findOne({ Name: { $regex: new RegExp(`^${email}$`, 'i') } }); // Case-insensitive search
     } catch (error) {
       throw new Error(`Error fetching user: ${error.message}`);
     }
   }
 
-  async updateUserWalletByEmail(email, wallet_info,cp) {
-    const user = await User.findOne({ Name: { $regex: new RegExp(`^${email}$`, 'i') } });;
+  async updateUserWalletByEmail(email, wallet_info, cp) {
+    email = email.replace(/\s+/g, ''); // Remove all spaces
+    const user = await User.findOne({ Name: { $regex: new RegExp(`^${email}$`, 'i') } });
     console.log('User found:', user);
   
     if (!user) return null;
-    user.CP =(user.CP|| 0)+ parseFloat(cp);
+    user.CP = (user.CP || 0) + parseFloat(cp);
     // Ensure Wallet_Info is numeric and update it
     user.Wallet_Info = (user.Wallet_Info || 0) + parseFloat(wallet_info);  // Ensure wallet_info is a number
   
