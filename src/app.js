@@ -16,6 +16,7 @@ app.use(cors()); // Add this line
 
 // Routes
 app.use('/api/users', userRoutes);
+app.use('/users', userRoutes);
 app.use('/api/shops', shopLocationRoutes); // Add the /api/shops route
 app.use('/api/codes', codeRoutes); // Add the /api/shops route
 app.use('/api/referrals', referralRoutes);
