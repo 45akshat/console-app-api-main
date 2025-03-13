@@ -154,7 +154,7 @@ class UserController {
 
       const isDisposable = await disposableEmailDetector(email);
       if (isDisposable) {
-        return res.status(400).json({ success: false, message: 'Disposable email addresses are not allowed.' });
+        return res.status(500).json({ success: false, message: 'Disposable email addresses are not allowed.' });
       }
 
       const user = await UserService.findUserByEmail(email); // Check if the email already exists
