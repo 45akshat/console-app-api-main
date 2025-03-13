@@ -1,6 +1,7 @@
 const UserService = require('../services/user.service');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
+const disposableEmailDetector = require('disposable-email-detector').default;
 
 // Nodemailer configuration
 const transporter = nodemailer.createTransport({
@@ -150,6 +151,12 @@ class UserController {
 
     try {
       email = email.replace(/\s+/g, '').toLowerCase(); // Remove all spaces and convert to lowercase
+
+      const isDisposable = await disposableEmailDetector(email);
+      if (isDisposable) {
+        return res.status(400).json({ success: false, message: 'Disposable email addresses are not allowed.' });
+      }
+
       const user = await UserService.findUserByEmail(email); // Check if the email already exists
 
       const otp = generateOTP();
