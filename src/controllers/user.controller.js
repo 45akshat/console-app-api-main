@@ -176,6 +176,14 @@ class UserController {
         // If user exists, update only OTP and OTP expiry
         await UserService.updateUserOTP(user.UserID, otp, otpExpiry);
       } else {
+        // Check if the email domain is valid
+        const valid_email_domain_array = ['gmail.com', 'outlook.com', 'yahoo.com'];
+        const emailDomain = email.split('@')[1];
+
+        if (!valid_email_domain_array.includes(emailDomain)) {
+          return res.status(500).json({ success: false, message: 'Email domain is not allowed.' });
+        }
+
         // Generate a unique UserID
         const userId = crypto.randomUUID();
 

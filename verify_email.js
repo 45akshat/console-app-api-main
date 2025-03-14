@@ -1,6 +1,6 @@
 const disposableEmailDetector = require('disposable-email-detector').default;
 
-const email = 'iguana10840@gmail.com';
+const email = 'japime2339@doishy.com';
 
 disposableEmailDetector(email)
   .then(isDisposable => {
