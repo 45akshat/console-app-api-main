@@ -35,7 +35,7 @@ class UserService {
   async getUserById(email) {
     try {
       email = normalizeEmail(email.replace(/\s+/g, '')); // Normalize email
-      return await User.findOne({ Email: { $regex: new RegExp(`^${email}$`, 'i') } }) // Case-insensitive search
+      return await User.findOne({ Name: { $regex: new RegExp(`^${email}$`, 'i') } }); // Case-insensitive search
     } catch (error) {
       throw new Error(`Error fetching user: ${error.message}`);
     }
@@ -44,7 +44,7 @@ class UserService {
   async findUserByEmail(email) {
     try {
       email = normalizeEmail(email.replace(/\s+/g, '')); // Normalize email
-      return await User.findOne({ Email: { $regex: new RegExp(`^${email}$`, 'i') } }) // Case-insensitive search
+      return await User.findOne({ Name: { $regex: new RegExp(`^${email}$`, 'i') } }); // Case-insensitive search
     } catch (error) {
       throw new Error(`Error fetching user: ${error.message}`);
     }
@@ -52,7 +52,7 @@ class UserService {
 
   async updateUserWalletByEmail(email, wallet_info, cp) {
     email = normalizeEmail(email.replace(/\s+/g, '')); // Normalize email
-    const user = await User.findOne({ Email: { $regex: new RegExp(`^${email}$`, 'i') } })
+    const user = await User.findOne({ Name: { $regex: new RegExp(`^${email}$`, 'i') } });
     console.log('User found:', user);
   
     if (!user) return null;
