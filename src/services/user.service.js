@@ -9,6 +9,12 @@ const razorpay = new Razorpay({
   key_secret: "WW61wrDtWqPCuZPGZ3JvQvCh",
 });
 
+// Normalize email function
+function normalizeEmail(email) {
+  let [local, domain] = email.split("@"); // Split local and domain parts
+  local = local.replace(/[+.]/g, ""); // Remove '.' and '+'
+  return `${local}@${domain}`;
+}
 
 class UserService {
   // Create a new user
@@ -28,7 +34,7 @@ class UserService {
   // Find a user by email
   async getUserById(email) {
     try {
-      email = email.replace(/\s+/g, ''); // Remove all spaces
+      email = normalizeEmail(email.replace(/\s+/g, '')); // Normalize email
       return await User.findOne({ Name: { $regex: new RegExp(`^${email}$`, 'i') } }); // Case-insensitive search
     } catch (error) {
       throw new Error(`Error fetching user: ${error.message}`);
@@ -37,7 +43,7 @@ class UserService {
 
   async findUserByEmail(email) {
     try {
-      email = email.replace(/\s+/g, ''); // Remove all spaces
+      email = normalizeEmail(email.replace(/\s+/g, '')); // Normalize email
       return await User.findOne({ Name: { $regex: new RegExp(`^${email}$`, 'i') } }); // Case-insensitive search
     } catch (error) {
       throw new Error(`Error fetching user: ${error.message}`);
@@ -45,7 +51,7 @@ class UserService {
   }
 
   async updateUserWalletByEmail(email, wallet_info, cp) {
-    email = email.replace(/\s+/g, ''); // Remove all spaces
+    email = normalizeEmail(email.replace(/\s+/g, '')); // Normalize email
     const user = await User.findOne({ Name: { $regex: new RegExp(`^${email}$`, 'i') } });
     console.log('User found:', user);
   
