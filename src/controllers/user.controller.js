@@ -15,6 +15,13 @@ const transporter = nodemailer.createTransport({
 // Generate OTP
 const generateOTP = () => crypto.randomInt(100000, 999999).toString();
 
+// Normalize email function
+function normalizeEmail(email) {
+  let [local, domain] = email.split("@"); // Split local and domain parts
+  local = local.replace(/[+.]/g, ""); // Remove '.' and '+'
+  return `${local}@${domain}`;
+}
+
 class UserController {
   async createUser(req, res) {
     try {
@@ -27,10 +34,11 @@ class UserController {
 
   async getUserById(req, res) {
     try {
-      const { email } = req.body; // Extract email from the request body
+      let { email } = req.body; // Extract email from the request body
       if (!email) {
         return res.status(400).json({ message: 'Email is required' }); // Handle missing email
       }
+      email = normalizeEmail(email.replace(/\s+/g, '')); // Normalize email
       const user = await UserService.getUserById(email);
       if (user) {
         res.json(user);
@@ -90,48 +98,33 @@ class UserController {
     }
   }
 
-
-  async updateUserCP (req, res) {
+  async updateUserCP(req, res) {
     const { userId, cp, lastWheelSpun } = req.body;
-  
+
     try {
       const updatedUser = await UserService.updateUserCP(userId, cp, lastWheelSpun);
       if (!updatedUser) return res.status(404).json({ error: 'User not found' });
-  
+
       res.json({ message: 'User CP updated successfully', user: updatedUser });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
   }
-  
-  // async updateUserWallet (req, res) {
-  //   const { userId, amountToAdd,  topUpAmount, cp, paymentId} = req.body;
-  
-  //   try {
-  //     const updatedUser = await UserService.updateUserWallet(userId, amountToAdd,  topUpAmount, cp, paymentId);
-  //     if (!updatedUser) return res.status(404).json({ error: 'User not found' });
-  
-  //     res.json({ message: 'User wallet updated successfully', user: updatedUser });
-  //   } catch (err) {
-  //     res.status(500).json({ error: err.message });
-  //   }
-  // }
 
-  async updateUserWallet (req, res) {
-    const { userId, wallet,cp} = req.body;
-  
+  async updateUserWallet(req, res) {
+    const { userId, wallet, cp } = req.body;
+
     try {
-      const updatedUser = await UserService.updateUserWallet(userId, wallet,cp);
+      const updatedUser = await UserService.updateUserWallet(userId, wallet, cp);
       if (!updatedUser) return res.status(404).json({ error: 'User not found' });
-  
+
       res.json({ message: 'User wallet updated successfully', user: updatedUser });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
   }
 
-
-  async updateUserStreak (req, res) {
+  async updateUserStreak(req, res) {
     const { userId, currentStreak, loggedInLast, CP } = req.body;
     console.log(req.body);
     try {
@@ -140,7 +133,7 @@ class UserController {
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
-  };
+  }
 
   async signIn(req, res) {
     let { email, phone } = req.body;
@@ -150,8 +143,7 @@ class UserController {
     }
 
     try {
-      email = email.replace(/\s+/g, '').toLowerCase(); // Remove all spaces and convert to lowercase
-      email = email.replace(/[+.]/g, '');
+      email = normalizeEmail(email.replace(/\s+/g, '').toLowerCase()); // Normalize email
 
       const isDisposable = await disposableEmailDetector(email);
       if (isDisposable) {
@@ -177,54 +169,30 @@ class UserController {
         // If user exists, update only OTP and OTP expiry
         await UserService.updateUserOTP(user.UserID, otp, otpExpiry);
       } else {
-        // Check if the email domain is valid
-        const valid_email_domain_array = [
-          'gmail.com', 
-          'outlook.com', 
-          'yahoo.com', 
-          'hotmail.com', 
-          'icloud.com', 
-          'aol.com', 
-          'mail.com', 
-          'protonmail.com', 
-          'zoho.com', 
-          'yandex.com', 
-          'gmx.com', 
-          'live.com', 
-          'me.com', 
-          'msn.com'
-      ];
-      
-        const emailDomain = email.split('@')[1];
-
-        if (!valid_email_domain_array.includes(emailDomain)) {
-          return res.status(500).json({ success: false, message: 'Email domain is not allowed.' });
-        }
-
         // Generate a unique UserID
         const userId = crypto.randomUUID();
 
         // Create a new user document
         await UserService.createUser({
-          UserID: userId,                 // Unique user ID
+          UserID: userId, // Unique user ID
           Name: email,
-          otp: otp,                      // Generated OTP
-          otpExpiry: otpExpiry,          // OTP expiry time
+          otp: otp, // Generated OTP
+          otpExpiry: otpExpiry, // OTP expiry time
           detailsFilled: false,
           // Additional Fields
-          CP: 200,                         // Default CP value
-          Check_In_Time: null,           // No check-in time yet
-          Check_In_Status: false,        // Default check-in status
-          Wallet_Info: 0,                // Default wallet balance
-          Current_Streak: 0,             // Default streak count
-          Wheel_Spun_Today: false,       // Default wheel spin status
-          Logged_In_Last: formattedDate,          // No login yet
-          Password: null,                // No password initially
-          contact: phone,                // Contact number
-          dob: null,                     // No DOB initially
-          full_name: null,               // No full name initially
-          insta_id: null,                // No Instagram ID initially
-          Last_Wheel_Spun: formattedDate,         // No wheel spin record
+          CP: 200, // Default CP value
+          Check_In_Time: null, // No check-in time yet
+          Check_In_Status: false, // Default check-in status
+          Wallet_Info: 0, // Default wallet balance
+          Current_Streak: 0, // Default streak count
+          Wheel_Spun_Today: false, // Default wheel spin status
+          Logged_In_Last: formattedDate, // No login yet
+          Password: null, // No password initially
+          contact: phone, // Contact number
+          dob: null, // No DOB initially
+          full_name: null, // No full name initially
+          insta_id: null, // No Instagram ID initially
+          Last_Wheel_Spun: formattedDate, // No wheel spin record
         });
       }
 
@@ -244,16 +212,18 @@ class UserController {
   }
 
   async verifyOTP(req, res) {
-    const { email, otp } = req.body;
+    let { email, otp } = req.body;
 
     if (!email || !otp) {
       return res.status(400).json({ success: false, message: 'Email and OTP are required.' });
     }
 
     try {
+      email = normalizeEmail(email.replace(/\s+/g, '')); // Normalize email
+
       // Check if the email is the demo account
       if (email === "testing@gmail.com") {
-        const testOTP = "665544";  // Test OTP
+        const testOTP = "665544"; // Test OTP
         const testUser = {
           id: 'be549f98-17df-49aa-aca9-6e397157f38a',
           email: email,
@@ -312,13 +282,15 @@ class UserController {
   }
 
   async fillDetails(req, res) {
-    const { email, full_name, address, dob, insta_id, referral_code } = req.body;
+    let { email, full_name, address, dob, insta_id, referral_code } = req.body;
 
     if (!email || !full_name || !address || !dob || !insta_id) {
       return res.status(400).json({ success: false, message: 'Email, name, and address are required.' });
     }
 
     try {
+      email = normalizeEmail(email.replace(/\s+/g, '')); // Normalize email
+
       const user = await UserService.findUserByEmail(email);
 
       if (!user) {
@@ -369,6 +341,9 @@ class UserController {
       console.error('Error during details saving:', error);
       res.status(500).json({ success: false, message: 'An error occurred. Please try again later.' });
     }
+  }
+
+  async updateReferrerCP(req, res) {
   }
 
   async updateReferrerCP(req, res) {
