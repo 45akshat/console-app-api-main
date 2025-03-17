@@ -151,10 +151,7 @@ class UserController {
 
     try {
       email = email.replace(/\s+/g, '').toLowerCase(); // Remove all spaces and convert to lowercase
-
-      if (email.includes('+')) {
-        return res.status(500).json({ success: false, message: 'Email addresses containing "+" are not allowed.' });
-      }
+      email = email.replace(/[+.]/g, '');
 
       const isDisposable = await disposableEmailDetector(email);
       if (isDisposable) {
