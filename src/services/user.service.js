@@ -35,10 +35,7 @@ class UserService {
   async getUserById(email) {
     try {
       email = normalizeEmail(email.replace(/\s+/g, '')); // Normalize email
-      return await User.findOne({
-        email: { 
-            $regex: new RegExp(`^${email.replace(/\./g, "\\.")}$`, 'i') } // Escape dots for regex
-    }); // Case-insensitive search
+      return await User.findOne({ Email: { $regex: new RegExp(`^${normalizedEmail}$`, 'i') } }) // Case-insensitive search
     } catch (error) {
       throw new Error(`Error fetching user: ${error.message}`);
     }
@@ -47,10 +44,7 @@ class UserService {
   async findUserByEmail(email) {
     try {
       email = normalizeEmail(email.replace(/\s+/g, '')); // Normalize email
-      return await User.findOne({
-        email: { 
-            $regex: new RegExp(`^${email.replace(/\./g, "\\.")}$`, 'i') } // Escape dots for regex
-    }); // Case-insensitive search
+      return await User.findOne({ Email: { $regex: new RegExp(`^${normalizedEmail}$`, 'i') } }) // Case-insensitive search
     } catch (error) {
       throw new Error(`Error fetching user: ${error.message}`);
     }
@@ -58,10 +52,7 @@ class UserService {
 
   async updateUserWalletByEmail(email, wallet_info, cp) {
     email = normalizeEmail(email.replace(/\s+/g, '')); // Normalize email
-    const user = await User.findOne({
-        email: { 
-            $regex: new RegExp(`^${email.replace(/\./g, "\\.")}$`, 'i') } // Escape dots for regex
-    });
+    const user = await User.findOne({ Email: { $regex: new RegExp(`^${normalizedEmail}$`, 'i') } })
     console.log('User found:', user);
   
     if (!user) return null;
