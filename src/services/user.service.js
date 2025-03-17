@@ -37,7 +37,7 @@ class UserService {
       email = normalizeEmail(email.replace(/\s+/g, '')); // Normalize email
       return await User.findOne({
         email: { 
-            $regex: new RegExp(`^${normalizedEmail.replace(/\./g, "\\.")}$`, 'i') } // Escape dots for regex
+            $regex: new RegExp(`^${email.replace(/\./g, "\\.")}$`, 'i') } // Escape dots for regex
     }); // Case-insensitive search
     } catch (error) {
       throw new Error(`Error fetching user: ${error.message}`);
@@ -49,7 +49,7 @@ class UserService {
       email = normalizeEmail(email.replace(/\s+/g, '')); // Normalize email
       return await User.findOne({
         email: { 
-            $regex: new RegExp(`^${normalizedEmail.replace(/\./g, "\\.")}$`, 'i') } // Escape dots for regex
+            $regex: new RegExp(`^${email.replace(/\./g, "\\.")}$`, 'i') } // Escape dots for regex
     }); // Case-insensitive search
     } catch (error) {
       throw new Error(`Error fetching user: ${error.message}`);
@@ -60,7 +60,7 @@ class UserService {
     email = normalizeEmail(email.replace(/\s+/g, '')); // Normalize email
     const user = await User.findOne({
         email: { 
-            $regex: new RegExp(`^${normalizedEmail.replace(/\./g, "\\.")}$`, 'i') } // Escape dots for regex
+            $regex: new RegExp(`^${email.replace(/\./g, "\\.")}$`, 'i') } // Escape dots for regex
     });
     console.log('User found:', user);
   
