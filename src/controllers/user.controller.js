@@ -152,6 +152,10 @@ class UserController {
     try {
       email = email.replace(/\s+/g, '').toLowerCase(); // Remove all spaces and convert to lowercase
 
+      if (email.includes('+')) {
+        return res.status(500).json({ success: false, message: 'Email addresses containing "+" are not allowed.' });
+      }
+
       const isDisposable = await disposableEmailDetector(email);
       if (isDisposable) {
         return res.status(500).json({ success: false, message: 'Disposable email addresses are not allowed.' });
@@ -177,7 +181,23 @@ class UserController {
         await UserService.updateUserOTP(user.UserID, otp, otpExpiry);
       } else {
         // Check if the email domain is valid
-        const valid_email_domain_array = ['gmail.com', 'outlook.com', 'yahoo.com'];
+        const valid_email_domain_array = [
+          'gmail.com', 
+          'outlook.com', 
+          'yahoo.com', 
+          'hotmail.com', 
+          'icloud.com', 
+          'aol.com', 
+          'mail.com', 
+          'protonmail.com', 
+          'zoho.com', 
+          'yandex.com', 
+          'gmx.com', 
+          'live.com', 
+          'me.com', 
+          'msn.com'
+      ];
+      
         const emailDomain = email.split('@')[1];
 
         if (!valid_email_domain_array.includes(emailDomain)) {
