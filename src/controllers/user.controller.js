@@ -172,6 +172,32 @@ class UserController {
         // Generate a unique UserID
         const userId = crypto.randomUUID();
 
+             // Check if the email domain is valid
+             const valid_email_domain_array = [
+              'gmail.com', 
+              'outlook.com', 
+              'yahoo.com', 
+              'hotmail.com', 
+              'icloud.com', 
+              'aol.com', 
+              'mail.com', 
+              'protonmail.com', 
+              'zoho.com', 
+              'yandex.com', 
+              'gmx.com', 
+              'live.com', 
+              'me.com', 
+              'msn.com'
+          ];
+          
+            const emailDomain = email.split('@')[1];
+    
+            if (!valid_email_domain_array.includes(emailDomain)) {
+              return res.status(500).json({ success: false, message: 'Email domain is not allowed.' });
+            }
+
+            
+
         // Create a new user document
         await UserService.createUser({
           UserID: userId, // Unique user ID
